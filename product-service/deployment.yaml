@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product-ms-deployment
+  namespace: devsecops-internship
+spec:
+  selector:
+    matchLabels:
+      app: product-ms
+  template:
+    metadata:
+      labels:
+        app: product-ms
+    spec:
+      containers:
+      - name: product-ms
+        image: papihack/product-ms:0.0.1
+        resources:
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 8081
+
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: product-ms-svc
+  namespace: devsecops-internship
+spec:
+  selector:
+    app: product-ms
+  type: LoadBalancer
+  ports:
+  - port: 8081
+    targetPort: 8081

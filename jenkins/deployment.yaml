@@ -28,10 +28,20 @@ spec:
         volumeMounts:
           - name: jenkins-home
             mountPath: /var/jenkins_home
+          - name: docker-process
+            mountPath: /var/run/docker.sock
+          - name: dns-conf
+            mountPath: /etc/resolv.conf
       volumes:
         - name: jenkins-home
           hostPath:
             path: /jenkins_home
+        - name: docker-process
+          hostPath:
+            path: /var/run/docker.sock
+        - name: dns-conf
+          hostPath:
+            path: /etc/resolv.conf
 
 ---
 
