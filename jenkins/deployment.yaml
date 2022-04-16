@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jenkins-deployment
+  namespace: devsecops-internship
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: custom-jenkins
+  template:
+    metadata:
+      labels:
+        app: custom-jenkins
+    spec:
+      containers:
+      - name: custom-jenkins
+        image: papihack/custom-jenkins:0.0.1
+        resources:
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        ports:
+        - name: node-port
+          containerPort: 8080
+        - name: master-port
+          containerPort: 50000
+        volumeMounts:
+          - name: jenkins-home
+            mountPath: /var/jenkins_home
+      volumes:
+        - name: jenkins-home
+          hostPath:
+            path: /jenkins_home
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: jenkins-svc
+  namespace: devsecops-internship
+spec:
+  selector:
+    app: custom-jenkins
+  type: LoadBalancer
+  ports:
+  - name: node-port
+    port: 8080
+    targetPort: 8080
+  - name: master-port
+    port: 50000
+    targetPort: 50000

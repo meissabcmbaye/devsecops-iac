@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vault-deployment
+  namespace: devsecops-internship
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vault
+  template:
+    metadata:
+      labels:
+        app: vault
+    spec:
+      containers:
+      - name: vault
+        image: vault
+        env:
+          - name: VAULT_DEV_ROOT_TOKEN_ID
+            valueFrom:
+              secretKeyRef:
+                name: vault-credentials
+                key: vault-root-token
+          - name: VAULT_LOCAL_CONFIG
+            valueFrom:
+              configMapKeyRef:
+                name: vault-config
+                key: vault-local-config
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 8200
+        volumeMounts:
+          - name: vault-data
+            mountPath: /vault/file
+          - name: vault-data
+            mountPath: /vault/config
+          - name: vault-data
+            mountPath: /vault/logs
+      volumes:
+        - name: vault-data
+          hostPath:
+            path: /vault
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: vault-svc
+  namespace: devsecops-internship
+spec:
+  selector:
+    app: vault
+  type: LoadBalancer
+  ports:
+  - port: 8200
+    targetPort: 8200
+
