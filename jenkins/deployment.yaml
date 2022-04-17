@@ -18,8 +18,8 @@ spec:
         image: papihack/custom-jenkins:0.0.1
         resources:
           limits:
-            memory: "1Gi"
-            cpu: "500m"
+            memory: "4Gi"
+            cpu: "800m"
         ports:
         - name: node-port
           containerPort: 8080
